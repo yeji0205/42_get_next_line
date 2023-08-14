@@ -1,11 +1,13 @@
-SRCS = ft_printf.c ft_num_base.c ft_strlen.c ft_word.c \
+SRCS = get_next_line.c get_next_line_utils.c 
 
-NAME = libftprintf.a
+# NAME = libftprintf.a
 
 OBJS = ${SRCS:.c=.o}
 
 CFLAGS = -Wall -Wextra -Werror
-CC = cc
+GCC = gcc
+
+# $ gcc -Wall -Wextra -Werror -D BUFFER_SIZE=32 get_next_line.c get_next_line_utils.c
 
 ${NAME}: ${OBJS}
 	@ar rcs ${NAME} ${OBJS}
