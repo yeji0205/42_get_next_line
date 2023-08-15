@@ -1,4 +1,4 @@
-SRCS = get_next_line.c get_next_line_utils.c 
+SRCS = get_next_line.c 
 
 # NAME = libftprintf.a
 
@@ -21,11 +21,12 @@ clean:
 
 fclean: clean
 	rm -f ${NAME}
+	rm test
 
 re: fclean all
 
-# test:
-# 	${CC} -c ${SRCS} ${CFLAGS}
-# 	${CC} -o test ${OBJS}
+test:
+	${CC} -c ${SRCS} ${CFLAGS}
+	${CC} -o test ${OBJS}
 
 .PHONY: all clean fclean re
