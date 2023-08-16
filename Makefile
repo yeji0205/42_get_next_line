@@ -26,7 +26,9 @@ fclean: clean
 re: fclean all
 
 test:
-	${CC} -c ${SRCS} ${CFLAGS}
-	${CC} -o test ${OBJS}
+#	${CC} -c ${SRCS} ${CFLAGS}
+#	${CC} -o test ${OBJS}
+	${GCC} -o test ${SRCS}
+
 
 .PHONY: all clean fclean re
