@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yegipark <yegipark@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yegpark <yegpark@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 17:46:27 by yegpark           #+#    #+#             */
-/*   Updated: 2023/09/29 17:18:32 by yegipark         ###   ########.fr       */
+/*   Updated: 2023/10/02 18:05:00 by yegpark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 char	*get_next_line(int fd)
 {
 	char	*buf_read;
-	char	*line;
 	char	**splited;
+	char	*line;
 	static char	*remain_str;
 	int	cnt_read_byte;
 	int	test_buf_size = 10;
@@ -37,38 +37,54 @@ char	*get_next_line(int fd)
 	if (fd < 0 || test_buf_size <= 0)
 		return (NULL);
 	buf_read = ft_calloc(test_buf_size + 1, sizeof(char));
+	// if there is error to create memory, return Null
 	if (!buf_read)
 		return (NULL);
-	cnt_read_byte = read(fd, buf_read, test_buf_size);
-	if (cnt_read_byte == -1)
-	{
-		free(buf_read);
-		return (NULL);
-	}
-	if (cnt_read_byte == 0)
-		return (remain_str);
 
-	// if cnt_read_byte is not -1(error to open file) nor 0(nothing to read)
-	// join the remained sentence and the sentence just read
-	remain_str = ft_strjoin(remain_str, buf_read);
-	int i = 0;
+	cnt_read_byte = 1;
+	// if there is still chars to read
+	// and there is no \n in the remain string
+	// if there is nothing to read => its end of the text
+	// if there is \n in remain string, doesn't have to join new string
+	//    since it will print out first 
+	while (cnt_read_byte != 0 && !ft_strchr(remain_str, '\n'))
+	{
+		cnt_read_byte = read(fd, buf_read, test_buf_size);
+		if (cnt_read_byte == -1)
+		{
+			free(buf_read);
+			return (NULL);
+		}
+		buf_read[cnt_read_byte] = '\0';
+		remain_str = ft_strjoin(remain_str, buf_read);
+	}
+	free(buf_read);
+	
+	// if there is nothing to read more, then it will come here directly
+	// or if there is already \n inside of remain_str 
 	if (!remain_str)
 		return (NULL);
 	// find if \n exists in the joined sentence
+	int	i = 0;
+	int	len_line;
+	int	len_remain;
 	while (remain_str[i])
 	{
 		if (remain_str[i] == '\n')
 		{
 			splited = ft_split(remain_str, '\n');
-			remain_str = splited[1];
-			line = splited[0];
-		}
-		else if (remain_str[i] == '\0'){
-			return (remain_str);
+			if (!splited)
+				return (NULL);
+			line = ft_strdup(splited[0]);
+			if (!line)
+				return (NULL);
+			ft_free(splited);
+			len_line = ft_strlen(line);
+			len_remain = ft_strlen(remain_str);
+			remain_str = ft_substr(remain_str, len_line + 1, len_remain - len_line);
 		}
 		i++;
 	}
-	free(buf_read);
 	return (line);
 }
 
@@ -83,6 +99,7 @@ int	main(void)
 {
 	int	fd1;
 	char	*line;
+	char	*buffer;
 
 	// It allows you to refer to and
 	// interact with the opened file throughout your program.
@@ -90,9 +107,8 @@ int	main(void)
 	// lowest positive number not currently opened by the calling process
 	// 실패하면 -1
 	fd1 = open("text/test2.txt", O_RDONLY);
-	// read(fd1, buffer, 10);
-	// read(fd1, buffer, 10);
-	// printf("%s\n", buffer);
+	read(fd1, buffer, 10);
+	printf("%s\n", buffer);
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -114,6 +130,20 @@ int	main(void)
 	// 	printf("%s", buffer);
 	// }
 	// fclose(file);
+
+	// char *test_str = "hello, \nnice to meet you. \nI am yeji";
+	// char **for_line = ft_split(test_str, '\n');
+	
+	// int len_line = ft_strlen(for_line[0]);
+	// int len_org = ft_strlen(test_str);
+	// printf("%d \n", len_line);
+	// printf("%d \n", len_org);
+	// test_str = ft_substr(test_str, len_line + 1, len_org - len_line);
+	// printf("%s", test_str);
+	// // for(int i = 0; i < 3; i++){
+	// // 	printf("%d: %s \n", i, return_str[i]);
+		
+	// // }
 
 	return (0);
 }

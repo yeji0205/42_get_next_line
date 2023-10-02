@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yegipark <yegipark@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yegpark <yegpark@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:51:49 by yegpark           #+#    #+#             */
-/*   Updated: 2023/09/29 15:23:55 by yegipark         ###   ########.fr       */
+/*   Updated: 2023/10/02 18:04:20 by yegpark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,23 @@ void	*ft_calloc(size_t num_block, size_t size_block)
 		return (NULL);
 	ft_bzero(ptr, num_block * size_block);
 	return (ptr);
+}
+
+char	*ft_strchr(const char *string, int c)
+{
+	while (*string)
+	{
+		if (*string == (char)c)
+		{
+			return ((char *)string);
+		}
+		string++;
+	}
+	if ((char)c == '\0')
+	{
+		return ((char *)string);
+	}
+	return (0);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
@@ -93,7 +110,7 @@ char	*ft_strdup(const char *str)
 	return (copy_str);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(char const *s, size_t start, size_t len)
 {
 	char	*sub;
 	size_t	i;
@@ -119,82 +136,85 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	return (0);
 }
 
-static size_t	ft_cnt_wrd(const char *s, char c)
-{
-	size_t	count;
-
-	count = 0;
-	while (*s)
-	{
-		if (*s != c)
-		{
-			count++;   // 1
-			while (*s && *s != c)  // if its not c
-			s++;             // go next memory
-		}       // looping getting out when c found in the string
-		else
-			s++;
-	}
-	return (count);
-}
-
-static char	*ft_extract_word(char const *s, char c)
-{
-	size_t	word_len;
-	char	*ptr;
-
-	word_len = 0;
-	while (s[word_len] && s[word_len] != c)
-			word_len++;
-	ptr = ft_substr(s, 0, word_len);
-	return (ptr);
-}
-
-// Free the memory if array memory allocation fails
-char	**ft_free(char **arr)
-{
-	size_t	i;
-
-	i = 0;
-	while (arr[i])
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
-	return (NULL);
-}
 
 
-/*******************************************
-* split the sentence to "output" & "remain"
-*******************************************/
 
-char	**ft_split(char const *s, char c)
-{
-	size_t	res_i;
-	char	**res;
+// static size_t	ft_cnt_wrd(const char *s, char c)
+// {
+// 	size_t	count;
 
-	if (!s)
-		return (0);
-	res = (char **)malloc(sizeof(char *) * (ft_cnt_wrd(s, c) + 1));
-	if (!res)
-		return (0);
-	res_i = 0;
-	while (*s)
-	{
-		if (*s != c)
-		{
-			res[res_i] = ft_extract_word(s, c);
-			if(!res[res_i])
-				return (ft_free(res));
-			res_i++;
-			while (*s && *s != c)
-				s++;
-		}
-		else
-			s++;
-	}
-	res[res_i] = 0;
-	return (res);
-}
+// 	count = 0;
+// 	while (*s)
+// 	{
+// 		if (*s != c)
+// 		{
+// 			count++;   // 1
+// 			while (*s && *s != c)  // if its not c
+// 			s++;             // go next memory
+// 		}       // looping getting out when c found in the string
+// 		else
+// 			s++;
+// 	}
+// 	return (count);
+// }
+
+// static char	*ft_extract_word(char const *s, char c)
+// {
+// 	size_t	word_len;
+// 	char	*ptr;
+
+// 	word_len = 0;
+// 	while (s[word_len] && s[word_len] != c)
+// 			word_len++;
+// 	ptr = ft_substr(s, 0, word_len);
+// 	return (ptr);
+// }
+
+// // Free the memory if array memory allocation fails
+// char	**ft_free(char **arr)
+// {
+// 	size_t	i;
+
+// 	i = 0;
+// 	while (arr[i])
+// 	{
+// 		free(arr[i]);
+// 		i++;
+// 	}
+// 	free(arr);
+// 	return (NULL);
+// }
+
+
+// /*******************************************
+// * split the sentence to "output" & "remain"
+// *******************************************/
+
+// char	**ft_split(char const *s, char c)
+// {
+// 	size_t	res_i;
+// 	char	**res;
+
+// 	if (!s)
+// 		return (0);
+// 	res = (char **)malloc(sizeof(char *) * (ft_cnt_wrd(s, c) + 1));
+// 	if (!res)
+// 		return (0);
+// 	res_i = 0;
+// 	while (*s)
+// 	{
+// 		if (*s != c)
+// 		{
+// 			res[res_i] = ft_extract_word(s, c);
+// 			if(!res[res_i])
+// 				return (ft_free(res));
+// 			res_i++;
+// 			while (*s && *s != c)
+// 				s++;
+// 		}
+// 		else
+// 			s++;
+// 	}
+// 	res[res_i] = 0;
+// 	return (res);
+// }
