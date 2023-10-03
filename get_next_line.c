@@ -3,89 +3,109 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yegpark <yegpark@student.42berlin.de>      +#+  +:+       +#+        */
+/*   By: yegipark <yegipark@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 17:46:27 by yegpark           #+#    #+#             */
-/*   Updated: 2023/10/02 18:05:00 by yegpark          ###   ########.fr       */
+/*   Updated: 2023/10/03 23:03:54 by yegipark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
 /**************************************************************************
- * 1. 파일에서 입력된 버퍼 사이즈 만큼 믄장을 읽는다
- * 2. 읽은 문장은 backup 배열에 저장.
- * 3. backup 배열에 \n 이 존재하면, 그 전까지 리턴
- *    backup 배열에 \n 이 존재하지 않으면, 1번부터 다시
- * 다시 함수가 콜되면 프로그램은 이 전에 읽었던 문장 뒤부터 읽어야 한다.
+ * * One line at a time
+ * * if there is nothing to read or error occurred => NULL
+ * * working reading a file & reading from a standard input
+ * * returned line should have \n + \0
+ *
+ * - ft_check_case():
+ * 	check if remain_str has already \n -> then no need to read -> ft_get_output()
+ * 	check if remain_str + read_str has \n -> if not, keep reading(while loop)
+ * 	check if there is nothing to read -> keep current remain_str -> ft_get_output()
+ * - ft_get_output(): extract the output string (finding \n)
+ * - ft_update_remain(): update remain_str (deleting output string)
+ *
 ***************************************************************************/
+
+char	*ft_get_output(char *remain_str)
+{
+	size_t	i;
+	char	*output_str;
+
+	if (!remain_str)
+		return (NULL);
+	i = 0;
+	// looping until we find '\n' and increase index
+	while (remain_str[i] && remain_str[i] != '\n')
+		i++;
+	output_str = ft_substr_line(remain_str, 0, i);
+	if (!output_str)
+		return (NULL);
+	return (output_str);
+}
+
+char	*ft_update_remain(char *remain_str)
+{
+	size_t	i;
+	size_t	len;
+	char	*renew_str;
+
+	if (!remain_str)
+		return (NULL);
+	i = 0;
+	// looping until we find '\n' and increase index
+	while (remain_str[i] && remain_str[i] != '\n')
+		i++;
+	len = ft_strlen(remain_str) - (++i);
+	renew_str = ft_substr(remain_str, i, len);
+	if (!renew_str)
+		return (NULL);
+	return (renew_str);
+}
 
 char	*get_next_line(int fd)
 {
-	char	*buf_read;
-	char	**splited;
-	char	*line;
+	char	*read_str;
+	char	*output_str;
 	static char	*remain_str;
-	int	cnt_read_byte;
-	int	test_buf_size = 10;
+	int	read_byte_num;
+	int	test_size = 10;
 
-	// // if nothing is remained, malloc size with 1 to have EOF
-	// if (!remain_str)
-	// 	remain_str = ft_calloc(1, sizeof(char));
-	// set up the buffer array to put the characters read
 	// if its fail to open file fd = -1
-	if (fd < 0 || test_buf_size <= 0)
+	if (fd < 0 || test_size <= 0)
 		return (NULL);
-	buf_read = ft_calloc(test_buf_size + 1, sizeof(char));
+	read_str = ft_calloc(test_size + 1, sizeof(char));
 	// if there is error to create memory, return Null
-	if (!buf_read)
+	if (!read_str)
 		return (NULL);
-
-	cnt_read_byte = 1;
-	// if there is still chars to read
-	// and there is no \n in the remain string
-	// if there is nothing to read => its end of the text
-	// if there is \n in remain string, doesn't have to join new string
-	//    since it will print out first 
-	while (cnt_read_byte != 0 && !ft_strchr(remain_str, '\n'))
+	// case check and keep reading if there is no \n in current remain_str
+	// to keep read the txt, read() should be inside of loop
+	// and to start the loop, we set up the variable 1
+	if (!remain_str)
+		remain_str = ft_calloc(1, 1);
+	read_byte_num = 1;
+	while (!ft_strchr(remain_str, '\n') && read_byte_num != 0)
 	{
-		cnt_read_byte = read(fd, buf_read, test_buf_size);
-		if (cnt_read_byte == -1)
+		read_byte_num = read(fd, read_str, test_size);
+		if (read_byte_num == -1)
 		{
-			free(buf_read);
+			free(read_str);
 			return (NULL);
 		}
-		buf_read[cnt_read_byte] = '\0';
-		remain_str = ft_strjoin(remain_str, buf_read);
+		read_str[read_byte_num] = '\0';  // have to add at the end so that we can treat it as string, otherwise functions that process strings might continue reading past the intended end of the string.
+		remain_str = ft_strjoin(remain_str, read_str);
 	}
-	free(buf_read);
-	
+	free(read_str);
+
 	// if there is nothing to read more, then it will come here directly
-	// or if there is already \n inside of remain_str 
+	// or if there is already \n inside of remain_str
 	if (!remain_str)
 		return (NULL);
-	// find if \n exists in the joined sentence
-	int	i = 0;
-	int	len_line;
-	int	len_remain;
-	while (remain_str[i])
-	{
-		if (remain_str[i] == '\n')
-		{
-			splited = ft_split(remain_str, '\n');
-			if (!splited)
-				return (NULL);
-			line = ft_strdup(splited[0]);
-			if (!line)
-				return (NULL);
-			ft_free(splited);
-			len_line = ft_strlen(line);
-			len_remain = ft_strlen(remain_str);
-			remain_str = ft_substr(remain_str, len_line + 1, len_remain - len_line);
-		}
-		i++;
-	}
-	return (line);
+	// finding a line will get return
+	output_str = ft_get_output(remain_str);
+	// deleting the ouput line from remain_str
+	remain_str = ft_update_remain(remain_str);
+	return (output_str);
 }
 
 
@@ -99,51 +119,45 @@ int	main(void)
 {
 	int	fd1;
 	char	*line;
-	char	*buffer;
 
 	// It allows you to refer to and
 	// interact with the opened file throughout your program.
 	// 프로세스 내에서 열려 있는 파일을 고유하게 식별하는 음수가 아닌 작은 정수를 반환
 	// lowest positive number not currently opened by the calling process
 	// 실패하면 -1
-	fd1 = open("text/test2.txt", O_RDONLY);
-	read(fd1, buffer, 10);
-	printf("%s\n", buffer);
+
+	// 3 LINES TEXT
+	fd1 = open("text/test_3lines.txt", O_RDONLY);
 
 	for (int i = 0; i < 3; i++)
 	{
 		line = get_next_line(fd1);
-		printf("%d -> %s\n", i, line);
+		printf("%d -> %s", i, line);
 		free(line);
 	}
 	close(fd1);
 
-	// FILE	*file;
-	// char buffer[100];
+	// // 3 LINES + 1 EMPTY LINE
+	// // fd1 = open("text/test_3lines_1empty.txt", O_RDONLY);
 
-	// file = fopen("text/test2.txt", "r");
-
-	// if (file == NULL){
-	// 	perror("Error opening file");
-	// 	return (-1);
-	// }	while (fgets(buffer, sizeof(buffer), file) != NULL){
-	// 	printf("%s", buffer);
-	// }
-	// fclose(file);
-
-	// char *test_str = "hello, \nnice to meet you. \nI am yeji";
-	// char **for_line = ft_split(test_str, '\n');
-	
-	// int len_line = ft_strlen(for_line[0]);
-	// int len_org = ft_strlen(test_str);
-	// printf("%d \n", len_line);
-	// printf("%d \n", len_org);
-	// test_str = ft_substr(test_str, len_line + 1, len_org - len_line);
-	// printf("%s", test_str);
-	// // for(int i = 0; i < 3; i++){
-	// // 	printf("%d: %s \n", i, return_str[i]);
-		
+	// // for (int i = 0; i < 4; i++)
+	// // {
+	// // 	line = get_next_line(fd1);
+	// // 	printf("%d, %s", i, line);
+	// // 	free(line);
 	// // }
+	// // close(fd1);
+
+	// // EMPTY TEXT
+	// fd1 = 0;
+
+	// line = get_next_line(fd1);
+	// printf("%s", line);
+	// free(line);
+
+	// close(fd1);
+
+
 
 	return (0);
 }

@@ -21,14 +21,14 @@ clean:
 
 fclean: clean
 	rm -f ${NAME}
-	rm test
+	rm output
 
 re: fclean all
 
 test:
 #	${CC} -c ${SRCS} ${CFLAGS}
 #	${CC} -o test ${OBJS}
-	${GCC} -o test ${SRCS}
+	${GCC} -o output ${SRCS}
 
 
 .PHONY: all clean fclean re
