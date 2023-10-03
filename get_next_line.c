@@ -6,7 +6,7 @@
 /*   By: yegipark <yegipark@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 17:46:27 by yegpark           #+#    #+#             */
-/*   Updated: 2023/10/03 23:03:54 by yegipark         ###   ########.fr       */
+/*   Updated: 2023/10/03 23:56:55 by yegipark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,18 +63,12 @@ char	*ft_update_remain(char *remain_str)
 	return (renew_str);
 }
 
-char	*get_next_line(int fd)
+char	*ft_check_read(char *remain_str, int fd)
 {
 	char	*read_str;
-	char	*output_str;
-	static char	*remain_str;
 	int	read_byte_num;
-	int	test_size = 10;
 
-	// if its fail to open file fd = -1
-	if (fd < 0 || test_size <= 0)
-		return (NULL);
-	read_str = ft_calloc(test_size + 1, sizeof(char));
+	read_str = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	// if there is error to create memory, return Null
 	if (!read_str)
 		return (NULL);
@@ -86,7 +80,7 @@ char	*get_next_line(int fd)
 	read_byte_num = 1;
 	while (!ft_strchr(remain_str, '\n') && read_byte_num != 0)
 	{
-		read_byte_num = read(fd, read_str, test_size);
+		read_byte_num = read(fd, read_str, BUFFER_SIZE);
 		if (read_byte_num == -1)
 		{
 			free(read_str);
@@ -96,9 +90,21 @@ char	*get_next_line(int fd)
 		remain_str = ft_strjoin(remain_str, read_str);
 	}
 	free(read_str);
+	return (remain_str);
+}
 
+char	*get_next_line(int fd)
+{
+
+	char	*output_str;
+	static char	*remain_str;
+
+	// if its fail to open file fd = -1
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
 	// if there is nothing to read more, then it will come here directly
 	// or if there is already \n inside of remain_str
+	remain_str = ft_check_read(remain_str, fd);
 	if (!remain_str)
 		return (NULL);
 	// finding a line will get return
@@ -109,11 +115,9 @@ char	*get_next_line(int fd)
 }
 
 
-extern int errno;
 
 #include <fcntl.h> // for the flag parameter of open()
 #include <stdio.h>
-
 
 int	main(void)
 {
@@ -129,7 +133,7 @@ int	main(void)
 	// 3 LINES TEXT
 	fd1 = open("text/test_3lines.txt", O_RDONLY);
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		line = get_next_line(fd1);
 		printf("%d -> %s", i, line);
@@ -156,8 +160,6 @@ int	main(void)
 	// free(line);
 
 	// close(fd1);
-
-
 
 	return (0);
 }

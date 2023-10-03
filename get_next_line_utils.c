@@ -6,12 +6,11 @@
 /*   By: yegipark <yegipark@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:51:49 by yegpark           #+#    #+#             */
-/*   Updated: 2023/10/03 17:45:22 by yegipark         ###   ########.fr       */
+/*   Updated: 2023/10/03 23:56:19 by yegipark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
 
 size_t	ft_strlen(const char *s)
 {
@@ -101,7 +100,7 @@ char	*ft_strdup(const char *str)
 	len = ft_strlen(str);
 	copy_str = (char *)malloc(sizeof(char) * (len + 1));
 	if (!copy_str)
-		return (0);
+		return (NULL);
 	i = 0;
 	while (str[i])
 	{
@@ -118,7 +117,7 @@ char	*ft_substr(char const *s, size_t start, size_t len)
 	size_t	i;
 
 	if (!s)
-		return (0);
+		return (NULL);
 	if (start >= ft_strlen(s))
 		return (ft_strdup(""));
 	if (len > ft_strlen(s) - start)
@@ -144,7 +143,7 @@ char	*ft_substr_line(char const *s, size_t start, size_t len)
 	size_t	i;
 
 	if (!s)
-		return (0);
+		return (NULL);
 	if (start >= ft_strlen(s))
 		return (ft_strdup(""));
 	if (len > ft_strlen(s) - start)
@@ -164,86 +163,3 @@ char	*ft_substr_line(char const *s, size_t start, size_t len)
 	}
 	return (NULL);
 }
-
-
-
-
-// static size_t	ft_cnt_wrd(const char *s, char c)
-// {
-// 	size_t	count;
-
-// 	count = 0;
-// 	while (*s)
-// 	{
-// 		if (*s != c)
-// 		{
-// 			count++;   // 1
-// 			while (*s && *s != c)  // if its not c
-// 			s++;             // go next memory
-// 		}       // looping getting out when c found in the string
-// 		else
-// 			s++;
-// 	}
-// 	return (count);
-// }
-
-// static char	*ft_extract_word(char const *s, char c)
-// {
-// 	size_t	word_len;
-// 	char	*ptr;
-
-// 	word_len = 0;
-// 	while (s[word_len] && s[word_len] != c)
-// 			word_len++;
-// 	ptr = ft_substr(s, 0, word_len);
-// 	return (ptr);
-// }
-
-// // Free the memory if array memory allocation fails
-// char	**ft_free(char **arr)
-// {
-// 	size_t	i;
-
-// 	i = 0;
-// 	while (arr[i])
-// 	{
-// 		free(arr[i]);
-// 		i++;
-// 	}
-// 	free(arr);
-// 	return (NULL);
-// }
-
-
-// /*******************************************
-// * split the sentence to "output" & "remain"
-// *******************************************/
-
-// char	**ft_split(char const *s, char c)
-// {
-// 	size_t	res_i;
-// 	char	**res;
-
-// 	if (!s)
-// 		return (0);
-// 	res = (char **)malloc(sizeof(char *) * (ft_cnt_wrd(s, c) + 1));
-// 	if (!res)
-// 		return (0);
-// 	res_i = 0;
-// 	while (*s)
-// 	{
-// 		if (*s != c)
-// 		{
-// 			res[res_i] = ft_extract_word(s, c);
-// 			if(!res[res_i])
-// 				return (ft_free(res));
-// 			res_i++;
-// 			while (*s && *s != c)
-// 				s++;
-// 		}
-// 		else
-// 			s++;
-// 	}
-// 	res[res_i] = 0;
-// 	return (res);
-// }
