@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yegipark <yegipark@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yegpark <yegpark@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 17:46:27 by yegpark           #+#    #+#             */
-/*   Updated: 2023/10/04 02:27:06 by yegipark         ###   ########.fr       */
+/*   Updated: 2023/10/04 18:45:35 by yegpark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ char	*ft_get_output(char *remain_str)
 	if (!remain_str)
 		return (NULL);
 	i = 0;
-	// looping until we find '\n' and increase index
 	while (remain_str[i] && remain_str[i] != '\n')
 		i++;
 	output_str = ft_substr_line(remain_str, 0, i);
@@ -68,28 +67,29 @@ char	*ft_check_read(char *remain_str, int fd)
 	char	*read_str;
 	int	read_byte_num;
 
-	read_str = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	read_str = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
 	// if there is error to create memory, return Null
 	if (!read_str)
 		return (NULL);
 	// case check and keep reading if there is no \n in current remain_str
 	// to keep read the txt, read() should be inside of loop
 	// and to start the loop, we set up the variable 1
-	if (!remain_str)
-		remain_str = ft_calloc(1, 1);
 	read_byte_num = 1;
 	while (!ft_strchr(remain_str, '\n') && read_byte_num != 0)
 	{
 		read_byte_num = read(fd, read_str, BUFFER_SIZE);
 		if (read_byte_num == -1)
 		{
+			free(remain_str);
 			free(read_str);
+			read_str = NULL;
 			return (NULL);
 		}
-		read_str[read_byte_num] = '\0';  // have to add at the end so that we can treat it as string, otherwise functions that process strings might continue reading past the intended end of the string.
+		read_str[read_byte_num] = '\0';
 		remain_str = ft_strjoin(remain_str, read_str);
 	}
 	free(read_str);
+	read_str = NULL;
 	return (remain_str);
 }
 
@@ -99,6 +99,11 @@ char	*get_next_line(int fd)
 	char	*output_str;
 	static char	*remain_str;
 
+	if (!remain_str)
+	{
+		remain_str = (char *)malloc(1 * sizeof(char));
+		remain_str[0] = '\0';
+	}
 	// if its fail to open file fd = -1
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
@@ -109,6 +114,12 @@ char	*get_next_line(int fd)
 		return (NULL);
 	// finding a line will get return
 	output_str = ft_get_output(remain_str);
+	if (!output_str || ft_strlen(output_str) == 0)
+	{
+		free(remain_str);
+		remain_str = NULL;
+		return (NULL);
+	}
 	// deleting the ouput line from remain_str
 	remain_str = ft_update_remain(remain_str);
 	return (output_str);

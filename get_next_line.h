@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yegipark <yegipark@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yegpark <yegpark@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 17:44:58 by yegpark           #+#    #+#             */
-/*   Updated: 2023/10/04 02:27:45 by yegipark         ###   ########.fr       */
+/*   Updated: 2023/10/04 18:45:46 by yegpark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@
 # endif
 
 char	*get_next_line(int fd);
-char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strjoin(char *s1, char *s2);
 char	*ft_substr(char const *s, size_t start, size_t len);
 char	*ft_substr_line(char const *s, size_t start, size_t len);
 char	*ft_strchr(const char *string, int c);
+char	*ft_strdup(const char *str);
 size_t	ft_strlen(const char *s);
-void	*ft_calloc(size_t num_block, size_t size_block);
 
 #endif
