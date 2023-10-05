@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yegpark <yegpark@student.42berlin.de>      +#+  +:+       +#+        */
+/*   By: yegipark <yegipark@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 15:51:49 by yegpark           #+#    #+#             */
-/*   Updated: 2023/10/04 18:46:06 by yegpark          ###   ########.fr       */
+/*   Updated: 2023/10/05 12:55:58 by yegipark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(const char *s)
+size_t	ft_strlen(char *s)
 {
 	size_t	i;
 
 	i = 0;
-	while (s[i])
+	while (s[i] != '\0')
 		i++;
 	return (i);
 }
@@ -39,44 +39,24 @@ char	*ft_strchr(const char *string, int c)
 	return (NULL);
 }
 
-char	*ft_strdup(const char *str)
-{
-	char	*copy_str;
-	size_t	len;
-	size_t	i;
-
-	len = ft_strlen(str);
-	copy_str = (char *)malloc(sizeof(char) * (len + 1));
-	if (!copy_str)
-		return (NULL);
-	i = 0;
-	while (str[i])
-	{
-		copy_str[i] = str[i];
-		i++;
-	}
-	copy_str[i] = '\0';
-	return (copy_str);
-}
-
-char	*ft_substr(char const *s, size_t start, size_t len)
+char	*ft_substr(char *remain_str, size_t start, size_t len)
 {
 	char	*sub;
 	size_t	i;
 
-	if (!s)
+	if (!remain_str)
 		return (NULL);
-	if (start >= ft_strlen(s))
-		return (ft_strdup(""));
-	if (len > ft_strlen(s) - start)
-		len = ft_strlen(s) - start;
+	if (start >= ft_strlen(remain_str))
+		return (NULL);
+	if (len > ft_strlen(remain_str) - start)
+		len = ft_strlen(remain_str) - start;
 	sub = (char *)malloc(sizeof(char) * (len + 1));
 	i = 0;
 	if (sub)
 	{
-		while (s[start + i] && (i < len))
+		while (remain_str[start + i] && (i < len))
 		{
-			sub[i] = s[start + i];
+			sub[i] = remain_str[start + i];
 			i++;
 		}
 		sub[i] = '\0';
@@ -85,30 +65,29 @@ char	*ft_substr(char const *s, size_t start, size_t len)
 	return (NULL);
 }
 
-char	*ft_substr_line(char const *s, size_t start, size_t len)
+char	*ft_substr_line(char *remain_str, size_t start, size_t len)
 {
 	char	*sub;
 	size_t	i;
 
-	if (!s)
+	if (!remain_str)
 		return (NULL);
-	if (start >= ft_strlen(s))
-		return (ft_strdup(""));
-	if (len > ft_strlen(s) - start)
-		len = ft_strlen(s) - start;
+	if (start >= ft_strlen(remain_str))
+		return (NULL);
+	if (len > ft_strlen(remain_str) - start)
+		len = ft_strlen(remain_str) - start;
 	sub = (char *)malloc(sizeof(char) * (len + 2));
 	i = 0;
 	if (sub)
 	{
-		while (s[start + i] && (i < len))
+		while (remain_str[start + i] && (i < len))
 		{
-			sub[i] = s[start + i];
+			sub[i] = remain_str[start + i];
 			i++;
 		}
-		sub[i] = '\n';
-		sub[++i] = '\0';
+		sub[i++] = remain_str[len];
+		sub[i] = '\0';
 		return (sub);
 	}
 	return (NULL);
 }
-

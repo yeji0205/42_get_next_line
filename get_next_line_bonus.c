@@ -6,7 +6,7 @@
 /*   By: yegipark <yegipark@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/04 01:50:29 by yegipark          #+#    #+#             */
-/*   Updated: 2023/10/04 02:17:37 by yegipark         ###   ########.fr       */
+/*   Updated: 2023/10/04 02:38:06 by yegipark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ char	*ft_check_read(char *remain_str, int fd)
 
 char	*get_next_line(int fd)
 {
-
 	char	*output_str;
 	static char	*remain_str;
 
